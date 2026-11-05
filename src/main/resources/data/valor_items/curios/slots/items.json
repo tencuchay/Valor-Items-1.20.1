@@ -1,0 +1,6 @@
+{
+  "size": 6,
+  "order": 250,
+  "icon": "valor_items:slot/empty_items_slot",
+  "validators": ["curios:tag"]
+}

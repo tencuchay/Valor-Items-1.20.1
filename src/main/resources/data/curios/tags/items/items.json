@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "valor_items:blitz_blade",
+    "valor_items:death_sickle",
+    "valor_items:mail_of_pain",
+    "valor_items:mantle_of_ra",
+    "valor_items:odins_will",
+    "valor_items:amulet_of_longevity",
+    "valor_items:gaias_standard",
+    "valor_items:devils_handshake",
+    "valor_items:fenrirs_fang",
+    "valor_items:claves_sancti",
+    "valor_items:stikks_sting",
+    "valor_items:hercules_madness",
+    "valor_items:fafnirs_talon",
+    "valor_items:uriels_brand"
+  ]
+}
