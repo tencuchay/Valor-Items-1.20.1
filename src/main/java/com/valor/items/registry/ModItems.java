@@ -13,6 +13,7 @@ import com.valor.items.item.HerculesMadnessItem;
 import com.valor.items.item.MailOfPainItem;
 import com.valor.items.item.MantleOfRaItem;
 import com.valor.items.item.OdinsWillItem;
+import com.valor.items.item.RankbreakerItem;
 import com.valor.items.item.UrielsBrandItem;
 import com.valor.items.item.StikksStingItem;
 import net.minecraft.world.item.Item;
@@ -66,6 +67,9 @@ public final class ModItems {
 
     public static final RegistryObject<Item> URIELS_BRAND = ITEMS.register("uriels_brand",
             () -> new UrielsBrandItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> RANKBREAKER = ITEMS.register("rankbreaker",
+            () -> new RankbreakerItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
     private ModItems() {}
 }

@@ -71,6 +71,10 @@ public final class ModAttributes {
     public static final RegistryObject<Attribute> MAGIC_SHIELD = ATTRIBUTES.register("magic_shield",
             () -> new RangedAttribute("attribute.valor_items.magic_shield", 0.0D, 0.0D, 100000.0D).setSyncable(true));
 
+    /** Armor penetration: flat armor of the target that is ignored by the physical damage of the wearer (A - P). */
+    public static final RegistryObject<Attribute> ARMOR_PENETRATION = ATTRIBUTES.register("armor_penetration",
+            () -> new RangedAttribute("attribute.valor_items.armor_penetration", 0.0D, 0.0D, 1000.0D).setSyncable(true));
+
     @SubscribeEvent
     public static void onAttributeModification(EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, MAGIC_ARMOR.get());
@@ -86,6 +90,7 @@ public final class ModAttributes {
         event.add(EntityType.PLAYER, LIFESTEAL.get());
         event.add(EntityType.PLAYER, MAGIC_SHIELD.get());
         event.add(EntityType.PLAYER, MAGIC_LIFESTEAL.get());
+        event.add(EntityType.PLAYER, ARMOR_PENETRATION.get());
     }
 
     private ModAttributes() {}

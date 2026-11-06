@@ -76,6 +76,9 @@ public final class ValorConfig {
         public final ForgeConfigSpec.DoubleValue dragonCooldownSeconds;
         public final ForgeConfigSpec.DoubleValue baneConvertPercent;
         public final ForgeConfigSpec.DoubleValue baneMaxMagicArmor;
+        public final ForgeConfigSpec.DoubleValue[] breakArmorPenetration = new ForgeConfigSpec.DoubleValue[5];
+        public final ForgeConfigSpec.DoubleValue wildwalkSpeedPercent;
+        public final ForgeConfigSpec.IntValue wildwalkSeconds;
         public final ForgeConfigSpec.DoubleValue guardianThreshold;
         public final ForgeConfigSpec.DoubleValue[] guardianShieldPercent = new ForgeConfigSpec.DoubleValue[5];
         public final ForgeConfigSpec.DoubleValue guardianSeconds;
@@ -273,6 +276,15 @@ public final class ValorConfig {
                     .defineInRange("baneConvertPercent", 50.0D, 0.0D, 1000.0D);
             baneMaxMagicArmor = builder.comment("Devil's Bane: the most magic armor it gives")
                     .defineInRange("baneMaxMagicArmor", 25.0D, 0.0D, 1000.0D);
+            double[] breakDefaults = {40.0D, 50.0D, 60.0D, 70.0D, 80.0D};
+            for (int i = 0; i < 5; i++) {
+                breakArmorPenetration[i] = builder.comment("Break: armor penetration, level " + (i + 1))
+                        .defineInRange("breakArmorPenetrationLevel" + (i + 1), breakDefaults[i], 0.0D, 1000.0D);
+            }
+            wildwalkSpeedPercent = builder.comment("Wildwalk: movement speed bonus in percent")
+                    .defineInRange("wildwalkSpeedPercent", 10.0D, 0.0D, 1000.0D);
+            wildwalkSeconds = builder.comment("Wildwalk: seconds without damage from an enemy before the bonus applies")
+                    .defineInRange("wildwalkSeconds", 8, 0, 100000);
             guardianThreshold = builder.comment("Magic Guardian: it triggers when the health falls below this percent of the max health")
                     .defineInRange("guardianThresholdPercent", 40.0D, 1.0D, 100.0D);
             double[] guardianShieldDefaults = {25.0D, 26.25D, 27.5D, 28.75D, 30.0D};
@@ -553,6 +565,19 @@ public final class ValorConfig {
 
     public static double baneConvertPercent() {
         try { return COMMON.baneConvertPercent.get(); } catch (IllegalStateException e) { return 50.0D; }
+    }
+
+    public static double breakArmorPenetration(int level) {
+        int i = Math.max(1, Math.min(5, level)) - 1;
+        try { return COMMON.breakArmorPenetration[i].get(); } catch (IllegalStateException e) { return 40.0D + 10.0D * i; }
+    }
+
+    public static double wildwalkSpeedPercent() {
+        try { return COMMON.wildwalkSpeedPercent.get(); } catch (IllegalStateException e) { return 10.0D; }
+    }
+
+    public static int wildwalkSeconds() {
+        try { return COMMON.wildwalkSeconds.get(); } catch (IllegalStateException e) { return 8; }
     }
 
     public static double baneMaxMagicArmor() {

@@ -31,6 +31,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.HERCULES_MADNESS.get());
                         output.accept(ModItems.FAFNIRS_TALON.get());
                         output.accept(ModItems.URIELS_BRAND.get());
+                        output.accept(ModItems.RANKBREAKER.get());
                     })
                     .build());
 

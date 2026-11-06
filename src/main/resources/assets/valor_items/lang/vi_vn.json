@@ -122,5 +122,12 @@
   "attribute.valor_items.magic_shield": "Giáp ảo phép",
   "ability.valor_items.uriels_brand.guardian.change": "Lá chắn phép: %s → %s máu tối đa",
   "attribute.name.generic.attack_damage": "Công vật lý",
-  "attribute.name.generic.max_health": "Máu tối đa"
+  "attribute.name.generic.max_health": "Máu tối đa",
+  "item.valor_items.rankbreaker": "Thương Xuyên Phá",
+  "ability.valor_items.rankbreaker.wildwalk.name": "Nội tại duy nhất - Khinh Công",
+  "ability.valor_items.rankbreaker.wildwalk.desc": "Tăng %1$s tốc chạy nếu không nhận sát thương từ kẻ địch trong vòng %2$ss.",
+  "ability.valor_items.rankbreaker.break.name": "Nội tại duy nhất - Nghiền Ép",
+  "ability.valor_items.rankbreaker.break.desc": "Tăng %s xuyên giáp.",
+  "ability.valor_items.rankbreaker.break.change": "Xuyên giáp: %s → %s",
+  "attribute.valor_items.armor_penetration": "Xuyên giáp"
 }
