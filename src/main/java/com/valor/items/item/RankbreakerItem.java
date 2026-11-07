@@ -21,14 +21,14 @@ import top.theillusivec4.curios.api.SlotResult;
 /**
  * Rankbreaker - relic for the "items" Curios slot.
  *
- * <p>Passive: +110 attack damage.
+ * <p>Passive: +10 attack damage.
  * <p>Unique passive "Wildwalk": movement speed while no enemy has hurt the wearer for a few seconds.
  * <p>Unique passive "Break": armor penetration, grows with the level (see RankbreakerEvents).
  */
 public class RankbreakerItem extends ValorItem {
     public static final String SLOT_ID = "items";
 
-    public static final double ATTACK_DAMAGE_BONUS = 110.0D;
+    public static final double ATTACK_DAMAGE_BONUS = 10.0D;
 
     private static final int MAX_LEVEL = 5;
     private static final int[] UPGRADE_COST = {10, 20, 30, 40};

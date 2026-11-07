@@ -276,7 +276,7 @@ public final class ValorConfig {
                     .defineInRange("baneConvertPercent", 50.0D, 0.0D, 1000.0D);
             baneMaxMagicArmor = builder.comment("Devil's Bane: the most magic armor it gives")
                     .defineInRange("baneMaxMagicArmor", 25.0D, 0.0D, 1000.0D);
-            double[] breakDefaults = {40.0D, 50.0D, 60.0D, 70.0D, 80.0D};
+            double[] breakDefaults = {5.0D, 7.0D, 9.0D, 11.0D, 13.0D};
             for (int i = 0; i < 5; i++) {
                 breakArmorPenetration[i] = builder.comment("Break: armor penetration, level " + (i + 1))
                         .defineInRange("breakArmorPenetrationLevel" + (i + 1), breakDefaults[i], 0.0D, 1000.0D);
@@ -569,7 +569,7 @@ public final class ValorConfig {
 
     public static double breakArmorPenetration(int level) {
         int i = Math.max(1, Math.min(5, level)) - 1;
-        try { return COMMON.breakArmorPenetration[i].get(); } catch (IllegalStateException e) { return 40.0D + 10.0D * i; }
+        try { return COMMON.breakArmorPenetration[i].get(); } catch (IllegalStateException e) { return 5.0D + 2.0D * i; }
     }
 
     public static double wildwalkSpeedPercent() {
