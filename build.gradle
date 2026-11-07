@@ -143,8 +143,7 @@ dependencies {
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 
-    runtimeOnly fg.deobf(files("../Valor-Weapons-1.20.1/build/libs/valor_weapons-1.0.0.jar"))
-    runtimeOnly fg.deobf(files("../Valor-Indicator-1.20.1/build/libs/valor_indicator-1.0.0.jar"))
+
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

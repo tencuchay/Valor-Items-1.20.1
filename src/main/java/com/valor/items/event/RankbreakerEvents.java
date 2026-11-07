@@ -20,12 +20,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * Armor penetration (valor_items:armor_penetration) and the Rankbreaker.
+ * Armor penetration, lethality, and the Rankbreaker.
  * <ul>
- *   <li>Armor penetration: the armor of the target becomes A - P (never below 0) against the physical damage of the
- *       attacker. Minecraft applies the armor after LivingHurtEvent, so the damage is raised just enough that, after
- *       the normal armor of the target, it equals the damage the armor A - P would have let through.</li>
- *   <li>"Break": the armor penetration attribute, one modifier with a fixed id (copies do not stack).</li>
+ *   <li>Lethality and armor penetration: the effective armor of the target becomes (A * (1 - %pen)) - L (never below 0)
+ *       against the physical damage of the attacker. Minecraft applies the armor after LivingHurtEvent, so the damage
+ *       is raised just enough that, after the normal armor of the target, it equals the damage the effective armor
+ *       would have let through.</li>
+ *   <li>"Break": the lethality attribute, one modifier with a fixed id (copies do not stack).</li>
  *   <li>"Wildwalk": movement speed when no enemy has hurt the wearer for some seconds (one fixed modifier).</li>
  * </ul>
  */
@@ -46,7 +47,7 @@ public final class RankbreakerEvents {
     }
 
     private static void updateBreak(ServerPlayer player, int level) {
-        AttributeInstance pen = player.getAttribute(ModAttributes.ARMOR_PENETRATION.get());
+        AttributeInstance pen = player.getAttribute(ModAttributes.LETHALITY.get());
         if (pen == null) {
             return;
         }
@@ -97,7 +98,7 @@ public final class RankbreakerEvents {
         }
     }
 
-    /** Armor penetration, last of all so that every other change to the damage is already in. */
+    /** Armor penetration and lethality, last of all so that every other change to the damage is already in. */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onHurt(LivingHurtEvent event) {
         if (!(event.getSource().getEntity() instanceof Player attacker)) {
@@ -107,16 +108,19 @@ public final class RankbreakerEvents {
         if (source.is(DamageTypeTags.BYPASSES_ARMOR) || MagicArmorEvents.isMagic(source)) {
             return;
         }
-        AttributeInstance penAttr = attacker.getAttribute(ModAttributes.ARMOR_PENETRATION.get());
-        double pen = penAttr == null ? 0.0D : penAttr.getValue();
+        AttributeInstance lethalityAttr = attacker.getAttribute(ModAttributes.LETHALITY.get());
+        double lethality = lethalityAttr == null ? 0.0D : lethalityAttr.getValue();
+        AttributeInstance percentAttr = attacker.getAttribute(ModAttributes.ARMOR_PENETRATION_PERCENT.get());
+        double percent = percentAttr == null ? 0.0D : percentAttr.getValue();
         LivingEntity target = event.getEntity();
         float armor = target.getArmorValue();
-        if (pen <= 0.0D || armor <= 0.0F || event.getAmount() <= 0.0F) {
+        if ((lethality <= 0.0D && percent <= 0.0D) || armor <= 0.0F || event.getAmount() <= 0.0F) {
             return;
         }
         float toughness = (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
         float amount = event.getAmount();
-        float wanted = CombatRules.getDamageAfterAbsorb(amount, (float) Math.max(0.0D, armor - pen), toughness);
+        double effectiveArmor = armor * Math.max(0.0D, 1.0D - percent) - lethality;
+        float wanted = CombatRules.getDamageAfterAbsorb(amount, (float) Math.max(0.0D, effectiveArmor), toughness);
         // find the damage that the real armor turns into "wanted" (the armor formula grows with the damage)
         float low = amount;
         float high = Math.max(amount, wanted * 5.0F + 1.0F);

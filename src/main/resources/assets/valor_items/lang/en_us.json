@@ -125,7 +125,9 @@
   "ability.valor_items.rankbreaker.wildwalk.name": "Unique Passive - Wildwalk",
   "ability.valor_items.rankbreaker.wildwalk.desc": "Increases movement speed by %1$s if no damage was taken from enemies for %2$ss.",
   "ability.valor_items.rankbreaker.break.name": "Unique Passive - Break",
-  "ability.valor_items.rankbreaker.break.desc": "Gains %s armor penetration.",
-  "ability.valor_items.rankbreaker.break.change": "Armor penetration: %s → %s",
-  "attribute.valor_items.armor_penetration": "Armor Penetration"
+  "ability.valor_items.rankbreaker.break.desc": "Gains %s lethality.",
+  "ability.valor_items.rankbreaker.break.change": "Lethality: %s → %s",
+  "attribute.valor_items.lethality": "Lethality",
+  "attribute.valor_items.armor_penetration": "Lethality",
+  "attribute.valor_items.armor_penetration_percent": "Armor Penetration (%)"
 }
