@@ -23,7 +23,7 @@ import top.theillusivec4.curios.api.SlotResult;
  *
  * <p>Passive: +10 attack damage.
  * <p>Unique passive "Wildwalk": movement speed while no enemy has hurt the wearer for a few seconds.
- * <p>Unique passive "Break": armor penetration, grows with the level (see RankbreakerEvents).
+ * <p>Unique passive "Break": armor penetration / lethality, grows with the level (see RankbreakerEvents).
  */
 public class RankbreakerItem extends ValorItem {
     public static final String SLOT_ID = "items";
@@ -104,5 +104,21 @@ public class RankbreakerItem extends ValorItem {
                     return best;
                 })
                 .orElse(0);
+    }
+
+    /** Total lethality granted by all Rankbreaker copies worn by the entity. */
+    public static double getTotalLethality(LivingEntity entity) {
+        return CuriosApi.getCuriosInventory(entity).resolve()
+                .map(handler -> {
+                    double total = 0.0D;
+                    for (SlotResult result : handler.findCurios(ModItems.RANKBREAKER.get())) {
+                        ItemStack stack = result.stack();
+                        if (stack.getItem() instanceof RankbreakerItem item) {
+                            total += ValorConfig.breakArmorPenetration(item.getLevel(stack));
+                        }
+                    }
+                    return total;
+                })
+                .orElse(0.0D);
     }
 }

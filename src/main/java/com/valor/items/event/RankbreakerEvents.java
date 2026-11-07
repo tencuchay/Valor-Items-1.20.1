@@ -7,34 +7,38 @@ import com.valor.items.registry.ModAttributes;
 import java.util.UUID;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.CombatRules;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * Armor penetration, lethality, and the Rankbreaker.
+ * Armor mechanics, armor penetration, lethality, and the Rankbreaker.
  * <ul>
- *   <li>Lethality and armor penetration: the effective armor of the target becomes (A * (1 - %pen)) - L (never below 0)
- *       against the physical damage of the attacker. Minecraft applies the armor after LivingHurtEvent, so the damage
- *       is raised just enough that, after the normal armor of the target, it equals the damage the effective armor
- *       would have let through.</li>
- *   <li>"Break": the lethality attribute, one modifier with a fixed id (copies do not stack).</li>
+ *   <li>Hyperbolic armor formula: damage = rawDamage * (K / (K + effectiveArmor)), with K = 6.0.</li>
+ *   <li>Protection enchantment (Protection): converted to +2.5% armor per level (Protection IV = +10% per piece).</li>
+ *   <li>Penetration order: effectiveArmor = (baseArmor * (1 + protBonus)) * (1 - %pen) - lethality (min 0).</li>
+ *   <li>"Break": lethality attribute from equipped Rankbreaker(s), stacks across equipped copies.</li>
  *   <li>"Wildwalk": movement speed when no enemy has hurt the wearer for some seconds (one fixed modifier).</li>
  * </ul>
  */
 @Mod.EventBusSubscriber(modid = ValorItems.MODID)
 public final class RankbreakerEvents {
     private static final String LAST_HIT_TAG = "ValorWildwalkLastHit";
+    private static final String RAW_DAMAGE_TAG = "ValorRawDamage";
     private static final UUID BREAK_UUID = UUID.fromString("5e1b7c93-2a48-4d6f-b0e3-8c9a4f2d1e67");
     private static final UUID WILDWALK_UUID = UUID.fromString("c8a4d2e6-9f13-4b57-a6d0-2e7b1c5f3a89");
+    private static final double FORMULA_K = 6.0D;
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -42,20 +46,20 @@ public final class RankbreakerEvents {
             return;
         }
         int level = RankbreakerItem.getEquippedLevel(player);
-        updateBreak(player, level);
+        updateBreak(player);
         updateWildwalk(player, level > 0);
     }
 
-    private static void updateBreak(ServerPlayer player, int level) {
+    private static void updateBreak(ServerPlayer player) {
         AttributeInstance pen = player.getAttribute(ModAttributes.LETHALITY.get());
         if (pen == null) {
             return;
         }
-        if (level <= 0) {
+        double amount = RankbreakerItem.getTotalLethality(player);
+        if (amount <= 0.0D) {
             pen.removeModifier(BREAK_UUID);
             return;
         }
-        double amount = ValorConfig.breakArmorPenetration(level);
         AttributeModifier current = pen.getModifier(BREAK_UUID);
         if (current != null && Math.abs(current.getAmount() - amount) < 1.0E-6D) {
             return;
@@ -98,41 +102,82 @@ public final class RankbreakerEvents {
         }
     }
 
-    /** Armor penetration and lethality, last of all so that every other change to the damage is already in. */
+    /** Record the incoming pre-armor physical damage amount. */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onHurt(LivingHurtEvent event) {
-        if (!(event.getSource().getEntity() instanceof Player attacker)) {
-            return;
-        }
         var source = event.getSource();
         if (source.is(DamageTypeTags.BYPASSES_ARMOR) || MagicArmorEvents.isMagic(source)) {
             return;
         }
-        AttributeInstance lethalityAttr = attacker.getAttribute(ModAttributes.LETHALITY.get());
-        double lethality = lethalityAttr == null ? 0.0D : lethalityAttr.getValue();
-        AttributeInstance percentAttr = attacker.getAttribute(ModAttributes.ARMOR_PENETRATION_PERCENT.get());
-        double percent = percentAttr == null ? 0.0D : percentAttr.getValue();
-        LivingEntity target = event.getEntity();
-        float armor = target.getArmorValue();
-        if ((lethality <= 0.0D && percent <= 0.0D) || armor <= 0.0F || event.getAmount() <= 0.0F) {
+        if (event.getAmount() <= 0.0F) {
             return;
         }
-        float toughness = (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
-        float amount = event.getAmount();
-        double effectiveArmor = armor * Math.max(0.0D, 1.0D - percent) - lethality;
-        float wanted = CombatRules.getDamageAfterAbsorb(amount, (float) Math.max(0.0D, effectiveArmor), toughness);
-        // find the damage that the real armor turns into "wanted" (the armor formula grows with the damage)
-        float low = amount;
-        float high = Math.max(amount, wanted * 5.0F + 1.0F);
-        for (int i = 0; i < 30; i++) {
-            float mid = (low + high) / 2.0F;
-            if (CombatRules.getDamageAfterAbsorb(mid, armor, toughness) < wanted) {
-                low = mid;
-            } else {
-                high = mid;
+        event.getEntity().getPersistentData().putFloat(RAW_DAMAGE_TAG, event.getAmount());
+    }
+
+    /**
+     * Custom hyperbolic armor & protection formula:
+     * Overrides vanilla armor and enchantment damage reductions with the Direction 1 formula.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onDamage(LivingDamageEvent event) {
+        LivingEntity target = event.getEntity();
+        if (!target.getPersistentData().contains(RAW_DAMAGE_TAG)) {
+            return;
+        }
+        float rawDamage = target.getPersistentData().getFloat(RAW_DAMAGE_TAG);
+        target.getPersistentData().remove(RAW_DAMAGE_TAG);
+
+        if (rawDamage <= 0.0F) {
+            return;
+        }
+
+        var source = event.getSource();
+        if (source.is(DamageTypeTags.BYPASSES_ARMOR) || MagicArmorEvents.isMagic(source)) {
+            return;
+        }
+
+        // 1. Base armor
+        float baseArmor = target.getArmorValue();
+
+        // 2. Protection enchantment bonus: +2.5% armor per level (Protection IV = +10% per piece)
+        int totalProt = 0;
+        for (ItemStack stack : target.getArmorSlots()) {
+            if (!stack.isEmpty()) {
+                totalProt += EnchantmentHelper.getItemEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, stack);
             }
         }
-        event.setAmount(high);
+        double totalArmor = baseArmor * (1.0D + totalProt * 0.025D);
+
+        // 3. Attacker's % Armor Penetration & Lethality
+        double percentPen = 0.0D;
+        double lethality = 0.0D;
+        if (source.getEntity() instanceof LivingEntity attacker) {
+            AttributeInstance percentAttr = attacker.getAttribute(ModAttributes.ARMOR_PENETRATION_PERCENT.get());
+            if (percentAttr != null) {
+                percentPen = percentAttr.getValue();
+            }
+            AttributeInstance lethalityAttr = attacker.getAttribute(ModAttributes.LETHALITY.get());
+            if (lethalityAttr != null) {
+                lethality = lethalityAttr.getValue();
+            }
+        }
+
+        // Effective armor after percentage penetration and flat lethality
+        double effectiveArmor = totalArmor * Math.max(0.0D, 1.0D - percentPen) - lethality;
+        effectiveArmor = Math.max(0.0D, effectiveArmor);
+
+        // 4. Direction 1: Hyperbolic armor formula K / (K + effectiveArmor)
+        float finalDamage = (float) (rawDamage * (FORMULA_K / (FORMULA_K + effectiveArmor)));
+
+        // 5. Keep Resistance potion effect if active on the target
+        if (target.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
+            int resLevel = target.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() + 1;
+            float resMultiplier = Math.max(0.0F, 1.0F - resLevel * 0.2F);
+            finalDamage *= resMultiplier;
+        }
+
+        event.setAmount(finalDamage);
     }
 
     private RankbreakerEvents() {}

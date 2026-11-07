@@ -34,43 +34,42 @@ Bất kỳ AI Agent nào khi can thiệp codebase này đều **phải tuân th�
   `EntityAttributeModificationEvent` trong class `ModAttributes`.
 - **Đồng bộ Client-Server:** Hầu hết đều gọi `.setSyncable(true)` để client (như HUD/bảng chỉ số) có thể đọc được giá trị hiện tại.
 
-### 3.2. Đường Ống Xử Lý Sát Thương & Xuyên Giáp (Damage Pipeline)
-Minecraft Vanilla **không có** cơ chế trừ giáp từng phần (chỉ có bypass 100% giáp). Do đó, mod can thiệp vào:
-- **File xử lý:** [`com.valor.items.event.RankbreakerEvents`](src/main/java/com/valor/items/event/RankbreakerEvents.java)
-- **Event:** `LivingHurtEvent` với `@SubscribeEvent(priority = EventPriority.LOWEST)` (chạy sau cùng để các hiệu ứng tăng giảm damage khác đã tính xong).
-- **Thứ tự ưu tiên tính Giáp (Chuẩn LMHT):**
-  1. `% Xuyên giáp` (`ARMOR_PENETRATION_PERCENT`): Bỏ qua một phần trăm giáp gốc của nạn nhân.
-  2. `Sát lực` (`LETHALITY`): Trừ tiếp vào lượng giáp phẳng còn lại.
-  3. `Armor Toughness`: Giữ nguyên công thức giảm trừ của Minecraft vanilla.
-- **Công thức tính toán:**
-  ```java
-  double effectiveArmor = armor * Math.max(0.0D, 1.0D - percent) - lethality;
-  float finalArmor = (float) Math.max(0.0D, effectiveArmor);
-  float wantedDamage = CombatRules.getDamageAfterAbsorb(amount, finalArmor, toughness);
-  ```
-- **Thuật toán tìm kiếm nhị phân (Binary Search):** Vì Minecraft sẽ tự động tính giáp gốc sau `LivingHurtEvent`, thuật toán sẽ nâng `event.setAmount(high)` lên mức vừa đủ để sau khi trừ giáp gốc của game, sát thương thực nhận đúng bằng `wantedDamage`.
+### 3.2. Đường Ống Xử Lý Sát Thương & Làm Lại Cơ Chế Giáp (Damage Pipeline)
+Cơ chế giáp gốc của Minecraft và bùa Bảo vệ đã được làm lại hoàn toàn theo chuẩn MOBA (Hyperbolic Formula):
+- **Files xử lý:** 
+  - [`com.valor.items.event.RankbreakerEvents`](src/main/java/com/valor/items/event/RankbreakerEvents.java)
+  - [`com.valor.items.item.RankbreakerItem`](src/main/java/com/valor/items/item/RankbreakerItem.java)
+- **Cách thức can thiệp:**
+  1. `LivingHurtEvent` (`priority = LOWEST`): Lưu trữ lượng sát thương vật lý gốc trước giáp (`ValorRawDamage`).
+  2. `LivingDamageEvent` (`priority = HIGHEST`): Chạy trước các hiệu ứng giáp ảo (`HerculesEvents`), ghi đè hoàn toàn công thức giáp và bùa Bảo vệ vanilla bằng công thức mới.
+- **Quy tắc tính toán Giáp & Bùa Bảo Vệ:**
+  1. **Quy đổi Bùa Bảo Vệ (Protection):** Mỗi cấp độ bùa Bảo vệ trên trang bị tăng **+2.5% giáp** (Cấp 1 = +2.5%, Cấp 2 = +5%, Cấp 3 = +7.5%, Cấp 4 = +10%). Full 4 món Protection IV = **+40% giáp**:
+     $$\text{totalArmor} = \text{baseArmor} \times (1.0 + \text{totalProtLevels} \times 0.025)$$
+  2. **Trừ giáp theo thứ tự LMHT:**
+     $$\text{effectiveArmor} = \max\Big(0,\; \text{totalArmor} \times (1.0 - \% \text{xuyên giáp}) - \text{Sát lực}\Big)$$
+  3. **Công thức cản sát thương Hyperbolic (Hướng 1 - $K = 6.0$):**
+     $$\text{finalDamage} = \text{rawDamage} \times \left(\frac{6.0}{6.0 + \text{effectiveArmor}}\right)$$
+  4. **Bảo tồn hiệu ứng thuốc Kháng sát thương (Resistance):** Nếu mục tiêu có hiệu ứng `DAMAGE_RESISTANCE`, sát thương tiếp tục nhân với $(1.0 - \text{level} \times 0.2)$.
+- **Cộng dồn Sát Lực từ Rankbreaker:**
+  - `RankbreakerItem.getTotalLethality(player)` duyệt toàn bộ slot Curios và cộng dồn toàn bộ Sát lực của tất cả các bản sao Thương Xuyên Phá đang đeo (Ví dụ đeo 6 cái cấp 5 max sẽ được $13 \times 6 = 78$ Sát lực).
 
 ---
 
 ## 4. Chi Tiết Trạng Thái Vừa Thay Đổi (Recent Task State)
 
-### Đã thay đổi ngày 2026-11-07:
-1. **Đổi tên attribute xuyên giáp phẳng:**
-   - Cũ: `ARMOR_PENETRATION` (`valor_items:armor_penetration`).
-   - Mới: **`LETHALITY`** (`valor_items:lethality`).
-   - Giữ alias tương thích ngược:
-     `@Deprecated public static final RegistryObject<Attribute> ARMOR_PENETRATION = LETHALITY;`
-2. **Thêm attribute mới:**
-   - **`ARMOR_PENETRATION_PERCENT`** (`valor_items:armor_penetration_percent`).
-   - Khoảng giá trị: `0.0D` đến `1.0D` (tương ứng $0\% \to 100\%$).
-3. **Cập nhật logic sát thương:**
-   - Class `RankbreakerEvents`:
-     - Trang bị Thương Xuyên Phá (Rankbreaker) gán điểm xuyên giáp vào modifier `LETHALITY`.
-     - Hàm `onHurt` đọc cả hai attribute `LETHALITY` và `ARMOR_PENETRATION_PERCENT` để tính giáp hiệu dụng theo công thức LMHT nêu trên.
+### Đã thay đổi:
+1. **Làm lại công thức Giáp & Bùa Bảo vệ (`RankbreakerEvents.java`):**
+   - Áp dụng công thức hyperbolic $K / (K + \text{effectiveArmor})$ với $K = 6.0$.
+   - Bùa Bảo Vệ (Protection) được chuyển thành bonus **+2.5% giáp/cấp** (+40% cho full set Protection IV).
+   - Khi người chơi có đủ Sát lực (ví dụ 78 Sát lực) vượt qua tổng giáp (kể cả giáp sau khi buff bùa Bảo vệ), sát thương gây ra đạt $100\%$ raw damage (không còn bị bùa Bảo vệ giảm oan 64%).
+2. **Cộng dồn Sát Lực (`RankbreakerItem.java`):**
+   - Thêm phương thức `getTotalLethality(LivingEntity)` tính tổng Sát lực từ tất cả các Rankbreaker đang đeo thay vì chỉ lấy cái cao nhất.
+3. **Đổi tên attribute & thêm % Xuyên giáp:**
+   - Đổi `ARMOR_PENETRATION` $\rightarrow$ `LETHALITY` (`valor_items:lethality`).
+   - Thêm `ARMOR_PENETRATION_PERCENT` (`valor_items:armor_penetration_percent`).
+   - Giữ alias `@Deprecated ARMOR_PENETRATION = LETHALITY`.
 4. **Bản dịch (Localization):**
-   - Đã cập nhật cả hai file `en_us.json` và `vi_vn.json`:
-     - `attribute.valor_items.lethality`: "Lethality" / "Sát lực"
-     - `attribute.valor_items.armor_penetration_percent`: "Armor Penetration (%)" / "Xuyên giáp (%)"
+   - Đã cập nhật `en_us.json` và `vi_vn.json` cho `lethality` ("Sát lực") và `armor_penetration_percent` ("Xuyên giáp (%)").
 
 ---
 
