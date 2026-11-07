@@ -141,32 +141,41 @@ public final class SickleHud {
                 return;
             }
             long now = mc.level.getGameTime();
-            // passives: right next to the hotbar; the Sickle and Adrenaline share the place and spread side by side
+            // passives: one row starting at the left end of the hotbar, just above the hotbar (4 px gap)
+            boolean showSickle = DeathSickleItem.getEquippedLevel(mc.player) > 0;
+            boolean showGaia = gaiaCooldownEnd > now && GaiasStandardItem.getEquippedLevel(mc.player) > 0;
+            boolean showAdr = adrenalineStacks > 0 && adrenalineEnd > now && OdinsWillItem.getEquippedLevel(mc.player) > 0;
+            boolean showFlame = flameStacks > 0 && flameEnd > now && DevilsHandshakeItem.getEquippedLevel(mc.player) > 0;
+            boolean showWind = windStrength > 0 && windEnd > now && StikksStingItem.getEquippedLevel(mc.player) > 0;
+            boolean showUriel = urielCooldownEnd > now && UrielsBrandItem.getEquippedLevel(mc.player) > 0;
+            int count = (showSickle ? 1 : 0) + (showGaia ? 1 : 0) + (showAdr ? 1 : 0) + (showFlame ? 1 : 0)
+                    + (showWind ? 1 : 0) + (showUriel ? 1 : 0);
+            int step = ICON_SIZE + 4;
+            int baseX = width / 2 - 91 + ValorConfig.hudOffsetX();
+            int passiveY = height - 22 - 4 - ICON_SIZE - ValorConfig.hudOffsetY();
             int slot = 0;
-            int baseX = width / 2 + 91 + 6 + ValorConfig.hudOffsetX();
-            int passiveY = height - 22 + (22 - ICON_SIZE) / 2 - ValorConfig.hudOffsetY();
-            if (DeathSickleItem.getEquippedLevel(mc.player) > 0) {
-                draw(graphics, mc.font, baseX + slot * (ICON_SIZE + 4), passiveY, now);
+            if (showSickle) {
+                draw(graphics, mc.font, baseX + slot * step, passiveY, now);
                 slot++;
             }
-            if (gaiaCooldownEnd > now && GaiasStandardItem.getEquippedLevel(mc.player) > 0) {
-                drawGaia(graphics, baseX + slot * (ICON_SIZE + 4), passiveY, now);
+            if (showGaia) {
+                drawGaia(graphics, baseX + slot * step, passiveY, now);
                 slot++;
             }
-            if (adrenalineStacks > 0 && adrenalineEnd > now && OdinsWillItem.getEquippedLevel(mc.player) > 0) {
-                drawAdrenaline(graphics, mc.font, baseX + slot * (ICON_SIZE + 4), passiveY, now, partialTick);
+            if (showAdr) {
+                drawAdrenaline(graphics, mc.font, baseX + slot * step, passiveY, now, partialTick);
                 slot++;
             }
-            if (flameStacks > 0 && flameEnd > now && DevilsHandshakeItem.getEquippedLevel(mc.player) > 0) {
-                drawFlame(graphics, mc.font, baseX + slot * (ICON_SIZE + 4), passiveY, now, partialTick);
+            if (showFlame) {
+                drawFlame(graphics, mc.font, baseX + slot * step, passiveY, now, partialTick);
                 slot++;
             }
-            if (windStrength > 0 && windEnd > now && StikksStingItem.getEquippedLevel(mc.player) > 0) {
-                drawWind(graphics, mc.font, baseX + slot * (ICON_SIZE + 4), passiveY, now, partialTick);
+            if (showWind) {
+                drawWind(graphics, mc.font, baseX + slot * step, passiveY, now, partialTick);
                 slot++;
             }
-            if (urielCooldownEnd > now && UrielsBrandItem.getEquippedLevel(mc.player) > 0) {
-                drawUriel(graphics, baseX + slot * (ICON_SIZE + 4), passiveY, now);
+            if (showUriel) {
+                drawUriel(graphics, baseX + slot * step, passiveY, now);
             }
             // active: near the bottom right corner of the screen, so that it is easy to tell from the passive
             int activeSlot = 0;

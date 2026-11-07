@@ -120,5 +120,12 @@
   "ability.valor_items.uriels_brand.guardian.name": "Unique Passive - Magic Guardian",
   "ability.valor_items.uriels_brand.guardian.desc": "When HP falls below %1$s, a shield equal to %2$s max HP will be activated to absorb magic damage, and movement speed will be increased by %3$s for %4$ss. Cooldown: %5$ss.",
   "attribute.valor_items.magic_shield": "Magic Shield",
-  "ability.valor_items.uriels_brand.guardian.change": "Shield: %s → %s max HP"
+  "ability.valor_items.uriels_brand.guardian.change": "Shield: %s → %s max HP",
+  "item.valor_items.rankbreaker": "Rankbreaker",
+  "ability.valor_items.rankbreaker.wildwalk.name": "Unique Passive - Wildwalk",
+  "ability.valor_items.rankbreaker.wildwalk.desc": "Increases movement speed by %1$s if no damage was taken from enemies for %2$ss.",
+  "ability.valor_items.rankbreaker.break.name": "Unique Passive - Break",
+  "ability.valor_items.rankbreaker.break.desc": "Gains %s armor penetration.",
+  "ability.valor_items.rankbreaker.break.change": "Armor penetration: %s → %s",
+  "attribute.valor_items.armor_penetration": "Armor Penetration"
 }
