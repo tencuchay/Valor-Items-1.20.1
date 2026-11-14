@@ -127,9 +127,13 @@
   "ability.valor_items.rankbreaker.wildwalk.name": "Nội tại duy nhất - Khinh Công",
   "ability.valor_items.rankbreaker.wildwalk.desc": "Tăng %1$s tốc chạy nếu không nhận sát thương từ kẻ địch trong vòng %2$ss.",
   "ability.valor_items.rankbreaker.break.name": "Nội tại duy nhất - Nghiền Ép",
-  "ability.valor_items.rankbreaker.break.desc": "Tăng %s sát lực.",
-  "ability.valor_items.rankbreaker.break.change": "Sát lực: %s → %s",
-  "attribute.valor_items.lethality": "Sát lực",
-  "attribute.valor_items.armor_penetration": "Sát lực",
-  "attribute.valor_items.armor_penetration_percent": "Xuyên giáp (%)"
+  "ability.valor_items.rankbreaker.break.desc": "Tăng %s xuyên giáp.",
+  "ability.valor_items.rankbreaker.break.change": "Xuyên giáp: %s → %s",
+  "attribute.valor_items.armor_penetration": "Xuyên giáp",
+  "item.valor_items.arctic_orb": "Cầu Băng Sương",
+  "stat.valor_items.magic_damage": "%s Công phép",
+  "stat.valor_items.magic_lifesteal": "%s Hút máu phép",
+  "ability.valor_items.arctic_orb.impervious.name": "Kích hoạt duy nhất - Phong Ấn",
+  "ability.valor_items.arctic_orb.impervious.desc": "Trở thành bất khả xâm phạm và bất động trong %1$ss: miễn nhiễm mọi sát thương và hiệu ứng nhưng không thể di chuyển, tấn công hay dùng kỹ năng. Sau khi kết thúc nhận lá chắn chặn %2$s (+%3$s công phép) sát thương trong %4$ss. Hồi chiêu: %5$ss. Nhấn %6$s để dùng.",
+  "ability.valor_items.arctic_orb.impervious.change": "Bất khả xâm phạm: %ss → %ss"
 }

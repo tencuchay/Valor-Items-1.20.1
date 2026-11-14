@@ -8,6 +8,7 @@ import com.valor.items.item.GaiasStandardItem;
 import com.valor.items.item.HerculesMadnessItem;
 import com.valor.items.item.MailOfPainItem;
 import com.valor.items.item.OdinsWillItem;
+import com.valor.items.item.ArcticOrbItem;
 import com.valor.items.item.StikksStingItem;
 import com.valor.items.item.UrielsBrandItem;
 import com.valor.items.registry.ModItems;
@@ -106,6 +107,31 @@ public final class SickleHud {
         herculesCooldownTotal = Math.max(1, cooldownTotal);
     }
 
+    // ---- Arctic Orb: Impervious ----
+    private static long arcticFreezeEnd;
+    private static long arcticActiveEnd;
+    private static int arcticActiveTotal = 1;
+    private static long arcticCooldownEnd;
+    private static int arcticCooldownTotal = 1;
+    private static boolean[][] arcticMask;
+
+    public static void updateArctic(int freezeLeft, int activeLeft, int activeTotalTicks, int cooldownLeft,
+                                    int cooldownTotalTicks) {
+        Minecraft mc = Minecraft.getInstance();
+        long now = mc.level == null ? 0 : mc.level.getGameTime();
+        arcticFreezeEnd = now + freezeLeft;
+        arcticActiveEnd = now + activeLeft;
+        arcticActiveTotal = Math.max(1, activeTotalTicks);
+        arcticCooldownEnd = now + cooldownLeft;
+        arcticCooldownTotal = Math.max(1, cooldownTotalTicks);
+    }
+
+    /** True while the player is encased in the ice of Arctic Orb (cannot move or attack). */
+    public static boolean isArcticFrozen() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.level != null && arcticFreezeEnd > mc.level.getGameTime();
+    }
+
     // ---- Uriel's Brand: Magic Guardian ----
     private static long urielCooldownEnd;
     private static int urielCooldownTotal = 1;
@@ -179,16 +205,15 @@ public final class SickleHud {
             }
             // active: near the bottom right corner of the screen, so that it is easy to tell from the passive
             int activeSlot = 0;
-            if (MailOfPainItem.isEquipped(mc.player)) {
+            for (var kind : com.valor.items.relic.ActiveRelics.worn(mc.player)) {
                 int x = width - FRAME_SIZE - ValorConfig.activeHudOffsetX();
                 int y = height - FRAME_SIZE - ValorConfig.activeHudOffsetY() - activeSlot * (FRAME_SIZE + 4);
-                drawMail(graphics, x, y, now);
+                switch (kind) {
+                    case MAIL_OF_PAIN -> drawMail(graphics, x, y, now);
+                    case HERCULES_MADNESS -> drawHercules(graphics, mc.font, x, y, now);
+                    case ARCTIC_ORB -> drawArctic(graphics, x, y, now);
+                }
                 activeSlot++;
-            }
-            if (HerculesMadnessItem.isEquipped(mc.player)) {
-                int x = width - FRAME_SIZE - ValorConfig.activeHudOffsetX();
-                int y = height - FRAME_SIZE - ValorConfig.activeHudOffsetY() - activeSlot * (FRAME_SIZE + 4);
-                drawHercules(graphics, mc.font, x, y, now);
             }
         });
     }
@@ -364,6 +389,67 @@ public final class SickleHud {
                     ry = ring - 1 - (k - (3 * ring - 3));
                 }
                 g.fill(x - 1 + rx, y - 1 + ry, x + rx, y + ry, 0xFFE0453C);
+            }
+        }
+    }
+
+    /** Impervious: the same frame as the other actives; the cooldown darkens it clockwise, an ice-blue line runs while it lasts. */
+    private static void drawArctic(GuiGraphics g, int x, int y, long now) {
+        g.blit(FRAME, x, y, 0, 0, FRAME_SIZE, FRAME_SIZE, FRAME_SIZE, FRAME_SIZE);
+        int ix = x + (FRAME_SIZE - 16) / 2;
+        int iy = y + (FRAME_SIZE - 16) / 2;
+        g.renderItem(new ItemStack(ModItems.ARCTIC_ORB.get()), ix, iy);
+        if (arcticMask == null) {
+            arcticMask = loadMask("arctic_orb");
+        }
+
+        long cooldownLeft = arcticCooldownEnd - now;
+        if (cooldownLeft > 0) {
+            double progress = 1.0D - (double) cooldownLeft / arcticCooldownTotal;
+            double c = 7.5D;
+            g.pose().pushPose();
+            g.pose().translate(0.0F, 0.0F, 300.0F);
+            for (int px = 0; px < 16; px++) {
+                for (int py = 0; py < 16; py++) {
+                    if (!arcticMask[px][py]) {
+                        continue;
+                    }
+                    double angle = Math.atan2(px - c, -(py - c));
+                    if (angle < 0) {
+                        angle += Math.PI * 2;
+                    }
+                    if (angle / (Math.PI * 2) >= progress) {
+                        g.fill(ix + px, iy + py, ix + px + 1, iy + py + 1, 0xC00A0A18);
+                    }
+                }
+            }
+            g.pose().popPose();
+        }
+
+        long activeLeft = arcticActiveEnd - now;
+        if (activeLeft > 0) {
+            int ring = FRAME_SIZE + 2;
+            int perimeter = 4 * ring - 4;
+            double elapsed = 1.0D - (double) activeLeft / arcticActiveTotal;
+            int start = (int) Math.round(elapsed * perimeter);
+            for (int i = start; i < perimeter; i++) {
+                int k = (i + ring / 2) % perimeter;
+                int rx;
+                int ry;
+                if (k < ring) {
+                    rx = k;
+                    ry = 0;
+                } else if (k < 2 * ring - 1) {
+                    rx = ring - 1;
+                    ry = k - ring + 1;
+                } else if (k < 3 * ring - 2) {
+                    rx = ring - 1 - (k - (2 * ring - 2));
+                    ry = ring - 1;
+                } else {
+                    rx = 0;
+                    ry = ring - 1 - (k - (3 * ring - 3));
+                }
+                g.fill(x - 1 + rx, y - 1 + ry, x + rx, y + ry, 0xFF7FD6F2);
             }
         }
     }

@@ -31,16 +31,18 @@ public record UseActivePacket(int slot) {
             if (player == null) {
                 return;
             }
-            // keep this order the same as the order of the icons in SickleHud
-            List<Consumer<ServerPlayer>> actives = new ArrayList<>();
-            if (MailOfPainItem.isEquipped(player)) {
-                actives.add(MailOfPainEvents::tryActivate);
-            }
-            if (HerculesMadnessItem.isEquipped(player)) {
-                actives.add(HerculesEvents::tryActivate);
+            // the same relics, in the same order, as the icons of SickleHud (at most two)
+            List<com.valor.items.relic.ActiveRelics.Kind> actives = com.valor.items.relic.ActiveRelics.worn(player);
+            // a frozen player cannot use skills
+            if (com.valor.items.event.ArcticOrbEvents.isFrozen(player)) {
+                return;
             }
             if (p.slot >= 0 && p.slot < actives.size()) {
-                actives.get(p.slot).accept(player);
+                switch (actives.get(p.slot)) {
+                    case MAIL_OF_PAIN -> MailOfPainEvents.tryActivate(player);
+                    case HERCULES_MADNESS -> HerculesEvents.tryActivate(player);
+                    case ARCTIC_ORB -> com.valor.items.event.ArcticOrbEvents.tryActivate(player);
+                }
             }
         });
         ctx.get().setPacketHandled(true);

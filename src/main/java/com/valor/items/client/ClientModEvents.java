@@ -19,6 +19,17 @@ public final class ClientModEvents {
     }
 
     @SubscribeEvent
+    public static void registerOverlays(net.minecraftforge.client.event.RegisterGuiOverlaysEvent event) {
+        event.registerBelow(net.minecraftforge.client.gui.overlay.VanillaGuiOverlay.HOTBAR.id(), "arctic_freeze",
+                (gui, graphics, partialTick, width, height) -> ArcticClientEvents.renderFreezeOverlay(graphics, width, height, partialTick));
+    }
+
+    @SubscribeEvent
+    public static void registerRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(com.valor.items.registry.ModEntities.ARCTIC_ICE.get(), ArcticIceRenderer::new);
+    }
+
+    @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.CHAIN_LIGHTNING.get(), ChainLightningParticle.Provider::new);
         event.registerSpriteSet(ModParticles.LIGHTNING_SPARK.get(), LightningSparkParticle.Provider::new);

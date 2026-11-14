@@ -25,6 +25,7 @@ public class ValorItems {
     public ValorItems() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
+        com.valor.items.registry.ModEntities.ENTITIES.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
         ModParticles.PARTICLES.register(modBus);
         ModEffects.EFFECTS.register(modBus);

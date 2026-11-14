@@ -41,6 +41,8 @@ public final class ModNetwork {
                 FlameStatePacket::encode, FlameStatePacket::decode, FlameStatePacket::handle);
         CHANNEL.registerMessage(13, HerculesStatePacket.class,
                 HerculesStatePacket::encode, HerculesStatePacket::decode, HerculesStatePacket::handle);
+        CHANNEL.registerMessage(15, ArcticStatePacket.class,
+                ArcticStatePacket::encode, ArcticStatePacket::decode, ArcticStatePacket::handle);
         CHANNEL.registerMessage(14, UrielStatePacket.class,
                 UrielStatePacket::encode, UrielStatePacket::decode, UrielStatePacket::handle);
         CHANNEL.registerMessage(12, WindStatePacket.class,

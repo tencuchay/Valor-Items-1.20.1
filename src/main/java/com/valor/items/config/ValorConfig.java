@@ -76,6 +76,11 @@ public final class ValorConfig {
         public final ForgeConfigSpec.DoubleValue dragonCooldownSeconds;
         public final ForgeConfigSpec.DoubleValue baneConvertPercent;
         public final ForgeConfigSpec.DoubleValue baneMaxMagicArmor;
+        public final ForgeConfigSpec.DoubleValue[] arcticFreezeSeconds = new ForgeConfigSpec.DoubleValue[5];
+        public final ForgeConfigSpec.DoubleValue arcticShieldBase;
+        public final ForgeConfigSpec.DoubleValue arcticShieldMagicPercent;
+        public final ForgeConfigSpec.DoubleValue arcticShieldSeconds;
+        public final ForgeConfigSpec.IntValue arcticCooldownSeconds;
         public final ForgeConfigSpec.DoubleValue[] breakArmorPenetration = new ForgeConfigSpec.DoubleValue[5];
         public final ForgeConfigSpec.DoubleValue wildwalkSpeedPercent;
         public final ForgeConfigSpec.IntValue wildwalkSeconds;
@@ -276,7 +281,24 @@ public final class ValorConfig {
                     .defineInRange("baneConvertPercent", 50.0D, 0.0D, 1000.0D);
             baneMaxMagicArmor = builder.comment("Devil's Bane: the most magic armor it gives")
                     .defineInRange("baneMaxMagicArmor", 25.0D, 0.0D, 1000.0D);
-            double[] breakDefaults = {5.0D, 7.0D, 9.0D, 11.0D, 13.0D};
+            builder.comment("Arctic Orb - Unique Active: Impervious").push("arctic_orb");
+            double[] arcticDefaults = {1.5D, 1.75D, 2.0D, 2.5D, 3.0D};
+            for (int i = 0; i < 5; i++) {
+                arcticFreezeSeconds[i] = builder.comment("Seconds of immunity and immobility, level " + (i + 1)
+                                + " (the ice animation of that level has the same length)")
+                        .defineInRange("freezeSecondsLevel" + (i + 1), arcticDefaults[i], 0.05D, 60.0D);
+            }
+            arcticShieldBase = builder.comment("Shield after the immunity: flat points")
+                    .defineInRange("shieldBase", 5.0D, 0.0D, 100000.0D);
+            arcticShieldMagicPercent = builder.comment("Shield after the immunity: percent of the magic damage added")
+                    .defineInRange("shieldMagicPercent", 50.0D, 0.0D, 100000.0D);
+            arcticShieldSeconds = builder.comment("Seconds the shield lasts")
+                    .defineInRange("shieldSeconds", 2.0D, 0.05D, 600.0D);
+            arcticCooldownSeconds = builder.comment("Cooldown in seconds (starts when it is used)")
+                    .defineInRange("cooldownSeconds", 75, 0, 100000);
+            builder.pop();
+
+            double[] breakDefaults = {40.0D, 50.0D, 60.0D, 70.0D, 80.0D};
             for (int i = 0; i < 5; i++) {
                 breakArmorPenetration[i] = builder.comment("Break: armor penetration, level " + (i + 1))
                         .defineInRange("breakArmorPenetrationLevel" + (i + 1), breakDefaults[i], 0.0D, 1000.0D);
@@ -569,7 +591,28 @@ public final class ValorConfig {
 
     public static double breakArmorPenetration(int level) {
         int i = Math.max(1, Math.min(5, level)) - 1;
-        try { return COMMON.breakArmorPenetration[i].get(); } catch (IllegalStateException e) { return 5.0D + 2.0D * i; }
+        try { return COMMON.breakArmorPenetration[i].get(); } catch (IllegalStateException e) { return 40.0D + 10.0D * i; }
+    }
+
+    public static double arcticFreezeSeconds(int level) {
+        int i = Math.max(1, Math.min(5, level)) - 1;
+        try { return COMMON.arcticFreezeSeconds[i].get(); } catch (IllegalStateException e) { return i < 2 ? 1.5D + 0.25D * i : (i == 2 ? 2.0D : 2.5D + 0.5D * (i - 3)); }
+    }
+
+    public static double arcticShieldBase() {
+        try { return COMMON.arcticShieldBase.get(); } catch (IllegalStateException e) { return 5.0D; }
+    }
+
+    public static double arcticShieldMagicPercent() {
+        try { return COMMON.arcticShieldMagicPercent.get(); } catch (IllegalStateException e) { return 50.0D; }
+    }
+
+    public static double arcticShieldSeconds() {
+        try { return COMMON.arcticShieldSeconds.get(); } catch (IllegalStateException e) { return 2.0D; }
+    }
+
+    public static int arcticCooldownSeconds() {
+        try { return COMMON.arcticCooldownSeconds.get(); } catch (IllegalStateException e) { return 75; }
     }
 
     public static double wildwalkSpeedPercent() {

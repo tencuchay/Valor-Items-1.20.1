@@ -125,9 +125,13 @@
   "ability.valor_items.rankbreaker.wildwalk.name": "Unique Passive - Wildwalk",
   "ability.valor_items.rankbreaker.wildwalk.desc": "Increases movement speed by %1$s if no damage was taken from enemies for %2$ss.",
   "ability.valor_items.rankbreaker.break.name": "Unique Passive - Break",
-  "ability.valor_items.rankbreaker.break.desc": "Gains %s lethality.",
-  "ability.valor_items.rankbreaker.break.change": "Lethality: %s → %s",
-  "attribute.valor_items.lethality": "Lethality",
-  "attribute.valor_items.armor_penetration": "Lethality",
-  "attribute.valor_items.armor_penetration_percent": "Armor Penetration (%)"
+  "ability.valor_items.rankbreaker.break.desc": "Gains %s armor penetration.",
+  "ability.valor_items.rankbreaker.break.change": "Armor penetration: %s → %s",
+  "attribute.valor_items.armor_penetration": "Armor Penetration",
+  "item.valor_items.arctic_orb": "Arctic Orb",
+  "stat.valor_items.magic_damage": "%s Magic Damage",
+  "stat.valor_items.magic_lifesteal": "%s Magic Lifesteal",
+  "ability.valor_items.arctic_orb.impervious.name": "Unique Active - Impervious",
+  "ability.valor_items.arctic_orb.impervious.desc": "Become immune to all damage and effects for %1$ss, but cannot move, attack, or use skills. After the immunity ends, gain a shield that absorbs %2$s (+%3$s Magic Damage) damage for %4$ss. Cooldown: %5$ss. Press %6$s to use.",
+  "ability.valor_items.arctic_orb.impervious.change": "Immunity: %ss → %ss"
 }

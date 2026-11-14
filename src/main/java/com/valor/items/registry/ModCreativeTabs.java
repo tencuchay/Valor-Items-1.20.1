@@ -32,6 +32,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.FAFNIRS_TALON.get());
                         output.accept(ModItems.URIELS_BRAND.get());
                         output.accept(ModItems.RANKBREAKER.get());
+                        output.accept(ModItems.ARCTIC_ORB.get());
                     })
                     .build());
 
