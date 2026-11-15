@@ -365,7 +365,8 @@ public final class BlitzBladeEvents {
             return true;
         }
         // Ranged: arrows, tridents and modded arrows fired by the player
-        return source.getDirectEntity() instanceof AbstractArrow;
+        return source.getDirectEntity() instanceof AbstractArrow
+                || BasicProjectiles.isOwnedBasic(source.getDirectEntity(), player);
     }
 
     private BlitzBladeEvents() {}

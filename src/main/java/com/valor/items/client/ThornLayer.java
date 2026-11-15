@@ -29,14 +29,16 @@ public class ThornLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
     private static final ResourceLocation TEXTURE = new ResourceLocation(ValorItems.MODID, "textures/entity/thorn.png");
     private static final int COUNT = 24;
     /** Centre of the ball in the layer space of a player (0 is at the shoulders, positive is down). */
-    private static final float CENTER_Y = 0.6F;
+    private static final float CENTER_Y = 0.45F;
     /** Size of the shape the thorns start from: it follows the body (half width, half depth, half height; blocks). */
     private static final float RADIUS_X = 0.27F;
     private static final float RADIUS_Z = 0.14F;
-    private static final float RADIUS_Y = 0.85F;
+    private static final float RADIUS_Y = 0.7F;
     /** How deep inside the body a thorn starts, so that it grows out of the player and not out of the air. */
     private static final float SINK = 0.2F;
-    private static final float MAX_LENGTH = 1.0F;
+    private static final float MAX_LENGTH = 0.75F;
+    /** Thorns that point this far down (the legs) are not drawn: they looked silly while walking. */
+    private static final float LOWEST_DIRECTION = 0.45F;
     private static final float HALF_WIDTH = 0.14F;
     private static final int FADE_TICKS = 8;
 
@@ -109,6 +111,9 @@ public class ThornLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         Matrix3f normal = pose.last().normal();
         double time = ageInTicks + player.getId() * 17.0D;
         for (int i = 0; i < COUNT; i++) {
+            if (DIRECTIONS[i][1] > LOWEST_DIRECTION) {
+                continue;
+            }
             float[] pace = PACE[i];
             double wave = 0.6D * Math.sin(time * pace[0] + pace[2]) + 0.4D * Math.sin(time * pace[1] + pace[3]);
             // out for a while, in for a while: the middle of the wave is what makes it pop in and out

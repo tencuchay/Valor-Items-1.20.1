@@ -50,7 +50,7 @@ public final class FlameWraithEvents {
         }
         // only a normal attack (a melee hit of the player himself or a projectile he shot) gives a stack
         boolean melee = event.getSource().is(DamageTypes.PLAYER_ATTACK) && event.getSource().getDirectEntity() == player;
-        boolean ranged = event.getSource().getDirectEntity() instanceof AbstractArrow arrow && arrow.getOwner() == player;
+        boolean ranged = BasicProjectiles.isOwnedBasic(event.getSource().getDirectEntity(), player);
         if ((!melee && !ranged) || !(event.getEntity() instanceof LivingEntity)) {
             return;
         }

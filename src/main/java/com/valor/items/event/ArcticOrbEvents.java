@@ -52,6 +52,19 @@ public final class ArcticOrbEvents {
     private static final String NO_GRAVITY_TAG = "ValorArcticNoGravity";
     private static final String HERCULES_SHIELD_END_TAG = "ValorHerculesShieldEnd";
 
+    /**
+     * The immunity has ended but the player tick that gives the shield has not run yet (a mob can hit in between):
+     * give the shield now, before the hit is handled, so there is no gap between the immunity and the shield.
+     */
+    private static void settle(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            long end = serverPlayer.getPersistentData().getLong(FREEZE_END_TAG);
+            if (end != 0L && serverPlayer.level().getGameTime() >= end) {
+                endFreeze(serverPlayer, serverPlayer.isAlive());
+            }
+        }
+    }
+
     public static boolean isFrozen(Player player) {
         return player.getPersistentData().getLong(FREEZE_END_TAG) > player.level().getGameTime();
     }
@@ -197,6 +210,9 @@ public final class ArcticOrbEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onAttacked(LivingAttackEvent event) {
+        if (event.getEntity() instanceof Player victim) {
+            settle(victim);
+        }
         if (event.getEntity() instanceof ServerPlayer player && isFrozen(player)
                 && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             event.setCanceled(true);
@@ -205,6 +221,9 @@ public final class ArcticOrbEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onHurt(LivingHurtEvent event) {
+        if (event.getEntity() instanceof Player victim) {
+            settle(victim);
+        }
         if (event.getEntity() instanceof ServerPlayer player && isFrozen(player)
                 && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             event.setCanceled(true);

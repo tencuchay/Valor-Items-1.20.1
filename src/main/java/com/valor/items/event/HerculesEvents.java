@@ -91,7 +91,7 @@ public final class HerculesEvents {
         }
         Entity direct = source.getDirectEntity();
         boolean melee = source.is(DamageTypes.PLAYER_ATTACK) && direct == player;
-        boolean ranged = direct instanceof AbstractArrow arrow && arrow.getOwner() == player;
+        boolean ranged = BasicProjectiles.isOwnedBasic(direct, player);
         if (!melee && !ranged) {
             return;
         }

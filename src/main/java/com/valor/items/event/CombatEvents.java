@@ -82,16 +82,17 @@ public final class CombatEvents {
         }
         Entity direct = source.getDirectEntity();
         boolean melee = source.is(DamageTypes.PLAYER_ATTACK) && direct == player;
-        boolean ranged = direct instanceof AbstractArrow arrow && arrow.getOwner() == player;
+        boolean ranged = BasicProjectiles.isOwnedBasic(direct, player);
         if (!melee && !ranged) {
             return;
         }
         float amount = event.getAmount();
         if (ranged) {
-            amount += (float) ((AbstractArrow) direct).getPersistentData().getDouble(RANGED_BONUS_TAG);
+            // arrows get the bonus fixed when they were shot; other tagged projectiles already use the attack damage
+            amount += (float) direct.getPersistentData().getDouble(RANGED_BONUS_TAG);
         }
         double rate = player.getAttributeValue(ModAttributes.CRIT_RATE.get());
-        boolean crit = rate > 0.0D && player.getRandom().nextDouble() < rate;
+        boolean crit = rate > 0.0D && !BasicProjectiles.cannotCrit(direct) && player.getRandom().nextDouble() < rate;
         WindsBlessingEvents.onBasicHit(player, crit);
         if (crit) {
             amount *= (float) player.getAttributeValue(ModAttributes.CRIT_DAMAGE.get());

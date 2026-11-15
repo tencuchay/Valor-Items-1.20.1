@@ -32,7 +32,7 @@ public final class LifestealEvents {
         if (source.is(DamageTypes.PLAYER_ATTACK) && direct == player) {
             return true;
         }
-        return direct instanceof AbstractArrow arrow && arrow.getOwner() == player;
+        return BasicProjectiles.isOwnedBasic(direct, player);
     }
 
     private static boolean isPhysical(DamageSource source, ServerPlayer player) {
