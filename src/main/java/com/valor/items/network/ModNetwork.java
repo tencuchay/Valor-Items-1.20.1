@@ -47,6 +47,8 @@ public final class ModNetwork {
                 UrielStatePacket::encode, UrielStatePacket::decode, UrielStatePacket::handle);
         CHANNEL.registerMessage(12, WindStatePacket.class,
                 WindStatePacket::encode, WindStatePacket::decode, WindStatePacket::handle);
+        CHANNEL.registerMessage(16, ExterminationStatePacket.class,
+                ExterminationStatePacket::encode, ExterminationStatePacket::decode, ExterminationStatePacket::handle);
     }
 
     private ModNetwork() {}

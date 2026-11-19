@@ -11,6 +11,7 @@ import com.valor.items.item.OdinsWillItem;
 import com.valor.items.item.ArcticOrbItem;
 import com.valor.items.item.StikksStingItem;
 import com.valor.items.item.UrielsBrandItem;
+import com.valor.items.item.SoaringAuraItem;
 import com.valor.items.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -75,6 +76,19 @@ public final class SickleHud {
         flameStacks = stacks;
         flameEnd = now + ticksLeft;
         flameTotal = Math.max(1, ticksTotal);
+    }
+
+    // ---- Soaring Aura: Extermination ----
+    private static int exterminationStacks;
+    private static long exterminationEnd;
+    private static int exterminationTotal = 1;
+
+    public static void updateExtermination(int stacks, int ticksLeft, int ticksTotal) {
+        Minecraft mc = Minecraft.getInstance();
+        long now = mc.level == null ? 0 : mc.level.getGameTime();
+        exterminationStacks = stacks;
+        exterminationEnd = now + ticksLeft;
+        exterminationTotal = Math.max(1, ticksTotal);
     }
 
     // ---- Stikk's Sting: Wind's Blessing ----
@@ -174,6 +188,7 @@ public final class SickleHud {
             boolean showFlame = flameStacks > 0 && flameEnd > now && DevilsHandshakeItem.getEquippedLevel(mc.player) > 0;
             boolean showWind = windStrength > 0 && windEnd > now && StikksStingItem.getEquippedLevel(mc.player) > 0;
             boolean showUriel = urielCooldownEnd > now && UrielsBrandItem.getEquippedLevel(mc.player) > 0;
+            boolean showExtermination = exterminationStacks > 0 && exterminationEnd > now && SoaringAuraItem.getEquippedLevel(mc.player) > 0;
             int count = (showSickle ? 1 : 0) + (showGaia ? 1 : 0) + (showAdr ? 1 : 0) + (showFlame ? 1 : 0)
                     + (showWind ? 1 : 0) + (showUriel ? 1 : 0);
             int step = ICON_SIZE + 4;
@@ -202,6 +217,11 @@ public final class SickleHud {
             }
             if (showUriel) {
                 drawUriel(graphics, baseX + slot * step, passiveY, now);
+                slot++;
+            }
+            if (showExtermination) {
+                drawExtermination(graphics, mc.font, baseX + slot * step, passiveY, now, partialTick);
+                slot++;
             }
             // active: near the bottom right corner of the screen, so that it is easy to tell from the passive
             int activeSlot = 0;
@@ -526,6 +546,12 @@ public final class SickleHud {
     private static void drawFlame(GuiGraphics g, Font font, int x, int y, long now, float partialTick) {
         drawStacks(g, font, x, y, now, partialTick, new ItemStack(ModItems.DEVILS_HANDSHAKE.get()), 0xFF331A07,
                 flameStacks, flameEnd, flameTotal);
+    }
+
+    /** Soaring Aura: Extermination. */
+    private static void drawExtermination(GuiGraphics g, Font font, int x, int y, long now, float partialTick) {
+        drawStacks(g, font, x, y, now, partialTick, new ItemStack(ModItems.SOARING_AURA.get()), 0xFF4A3414,
+                exterminationStacks, exterminationEnd, exterminationTotal);
     }
 
     /** Stikk's Sting: the number shows 2 while a critical hit doubles the effect. */

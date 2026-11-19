@@ -3,6 +3,7 @@ package com.valor.items.registry;
 import com.valor.items.ValorItems;
 import com.valor.items.item.AmuletOfLongevityItem;
 import com.valor.items.item.ArcticOrbItem;
+import com.valor.items.item.BerithsAgonyItem;
 import com.valor.items.item.BlitzBladeItem;
 import com.valor.items.item.ClavesSanctiItem;
 import com.valor.items.item.DeathSickleItem;
@@ -15,6 +16,7 @@ import com.valor.items.item.MailOfPainItem;
 import com.valor.items.item.MantleOfRaItem;
 import com.valor.items.item.OdinsWillItem;
 import com.valor.items.item.RankbreakerItem;
+import com.valor.items.item.SoaringAuraItem;
 import com.valor.items.item.UrielsBrandItem;
 import com.valor.items.item.StikksStingItem;
 import net.minecraft.world.item.Item;
@@ -74,6 +76,12 @@ public final class ModItems {
 
     public static final RegistryObject<Item> ARCTIC_ORB = ITEMS.register("arctic_orb",
             () -> new ArcticOrbItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> SOARING_AURA = ITEMS.register("soaring_aura",
+            () -> new SoaringAuraItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> BERITHS_AGONY = ITEMS.register("beriths_agony",
+            () -> new BerithsAgonyItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
     private ModItems() {}
 }

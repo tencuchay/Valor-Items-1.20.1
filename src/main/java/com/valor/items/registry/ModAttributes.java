@@ -79,6 +79,10 @@ public final class ModAttributes {
     public static final RegistryObject<Attribute> ARMOR_PENETRATION_PERCENT = ATTRIBUTES.register("armor_penetration_percent",
             () -> new RangedAttribute("attribute.valor_items.armor_penetration_percent", 0.0D, 0.0D, 1.0D).setSyncable(true));
 
+    /** Magic penetration ("xuyen giap phep"): flat magic armor of the target ignored by magic damage of the attacker. */
+    public static final RegistryObject<Attribute> MAGIC_PENETRATION = ATTRIBUTES.register("magic_penetration",
+            () -> new RangedAttribute("attribute.valor_items.magic_penetration", 0.0D, 0.0D, 1000.0D).setSyncable(true));
+
     /** Backwards-compatibility alias for lethality. */
     @Deprecated
     public static final RegistryObject<Attribute> ARMOR_PENETRATION = LETHALITY;
@@ -100,6 +104,7 @@ public final class ModAttributes {
         event.add(EntityType.PLAYER, MAGIC_LIFESTEAL.get());
         event.add(EntityType.PLAYER, LETHALITY.get());
         event.add(EntityType.PLAYER, ARMOR_PENETRATION_PERCENT.get());
+        event.add(EntityType.PLAYER, MAGIC_PENETRATION.get());
     }
 
     private ModAttributes() {}

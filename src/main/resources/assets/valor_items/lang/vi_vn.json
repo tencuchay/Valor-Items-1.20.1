@@ -135,5 +135,14 @@
   "stat.valor_items.magic_lifesteal": "%s Hút máu phép",
   "ability.valor_items.arctic_orb.impervious.name": "Kích hoạt duy nhất - Phong Ấn",
   "ability.valor_items.arctic_orb.impervious.desc": "Trở thành bất khả xâm phạm và bất động trong %1$ss: miễn nhiễm mọi sát thương và hiệu ứng nhưng không thể di chuyển, tấn công hay dùng kỹ năng. Sau khi kết thúc nhận lá chắn chặn %2$s (+%3$s công phép) sát thương trong %4$ss. Hồi chiêu: %5$ss. Nhấn %6$s để dùng.",
-  "ability.valor_items.arctic_orb.impervious.change": "Bất khả xâm phạm: %ss → %ss"
+  "ability.valor_items.arctic_orb.impervious.change": "Bất khả xâm phạm: %ss → %ss",
+  "item.valor_items.soaring_aura": "Gươm Hiền Triết",
+  "ability.valor_items.soaring_aura.extermination.name": "Nội tại duy nhất - Diệt Thần",
+  "ability.valor_items.soaring_aura.extermination.desc": "Tung chiêu hoặc đánh thường trúng tướng địch sẽ cộng dồn %1$s xuyên giáp phép, tối đa cộng dồn %2$s lần, kéo dài %3$ss.",
+  "ability.valor_items.soaring_aura.extermination.change": "Xuyên giáp phép mỗi lần cộng dồn: %s → %s",
+  "attribute.valor_items.magic_penetration": "Xuyên giáp phép",
+  "item.valor_items.beriths_agony": "Mặt Nạ Berith",
+  "ability.valor_items.beriths_agony.torture.name": "Nội tại duy nhất - Thống Khổ",
+  "ability.valor_items.beriths_agony.torture.desc": "Đánh thường trúng đích khiến kẻ địch chịu %1$s máu hiện tại của mục tiêu thành sát thương phép mỗi giây trong %2$ss.",
+  "ability.valor_items.beriths_agony.torture.change": "Sát thương theo máu hiện tại mỗi giây: %s → %s"
 }

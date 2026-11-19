@@ -5,13 +5,14 @@ import com.valor.items.registry.ModAttributes;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Magic armor works like armor (same formula) but only against magic damage. */
+/** Magic armor works like armor (same formula) but only against magic damage. Magic penetration reduces effective magic armor. */
 @Mod.EventBusSubscriber(modid = ValorItems.MODID)
 public final class MagicArmorEvents {
 
@@ -28,7 +29,15 @@ public final class MagicArmorEvents {
         if (magicArmor == null || magicArmor.getValue() <= 0.0D) {
             return;
         }
-        event.setAmount(CombatRules.getDamageAfterAbsorb(event.getAmount(), (float) Math.min(magicArmor.getValue(), 100.0D), 0.0F));
+        double pen = 0.0D;
+        if (event.getSource().getEntity() instanceof LivingEntity attacker) {
+            AttributeInstance penAttr = attacker.getAttribute(ModAttributes.MAGIC_PENETRATION.get());
+            if (penAttr != null) {
+                pen = penAttr.getValue();
+            }
+        }
+        float effectiveMagicArmor = (float) Math.max(0.0D, magicArmor.getValue() - pen);
+        event.setAmount(CombatRules.getDamageAfterAbsorb(event.getAmount(), Math.min(effectiveMagicArmor, 100.0F), 0.0F));
     }
 
     private MagicArmorEvents() {}

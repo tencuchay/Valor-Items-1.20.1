@@ -89,6 +89,11 @@ public final class ValorConfig {
         public final ForgeConfigSpec.DoubleValue guardianSeconds;
         public final ForgeConfigSpec.DoubleValue guardianSpeedPercent;
         public final ForgeConfigSpec.IntValue guardianCooldownSeconds;
+        public final ForgeConfigSpec.DoubleValue[] exterminationPierce = new ForgeConfigSpec.DoubleValue[5];
+        public final ForgeConfigSpec.IntValue exterminationMaxStacks;
+        public final ForgeConfigSpec.DoubleValue exterminationSeconds;
+        public final ForgeConfigSpec.DoubleValue[] torturePercent = new ForgeConfigSpec.DoubleValue[5];
+        public final ForgeConfigSpec.DoubleValue tortureSeconds;
 
         private static final double[] DEFAULT_DURATIONS = {1.5D, 1.75D, 2.0D, 2.5D, 3.0D};
 
@@ -320,6 +325,28 @@ public final class ValorConfig {
                     .defineInRange("guardianSpeedPercent", 30.0D, 0.0D, 1000.0D);
             guardianCooldownSeconds = builder.comment("Magic Guardian: cooldown in seconds (starts when it triggers)")
                     .defineInRange("guardianCooldownSeconds", 75, 0, 100000);
+            builder.pop();
+
+            builder.comment("Soaring Aura - Unique Passive: Extermination").push("soaring_aura");
+            double[] exterminationDefaults = {3.0D, 4.25D, 5.0D, 5.25D, 6.0D};
+            for (int i = 0; i < 5; i++) {
+                exterminationPierce[i] = builder.comment("Magic pierce per stack, level " + (i + 1))
+                        .defineInRange("pierceLevel" + (i + 1), exterminationDefaults[i], 0.0D, 1000.0D);
+            }
+            exterminationMaxStacks = builder.comment("Maximum number of stacks")
+                    .defineInRange("maxStacks", 10, 1, 100);
+            exterminationSeconds = builder.comment("Seconds until one stack is lost (every hit restarts it)")
+                    .defineInRange("durationSeconds", 5.0D, 0.05D, 600.0D);
+            builder.pop();
+
+            builder.comment("Berith's Agony - Unique Passive: Torture").push("beriths_agony");
+            double[] tortureDefaults = {2.0D, 2.5D, 3.0D, 3.5D, 4.0D};
+            for (int i = 0; i < 5; i++) {
+                torturePercent[i] = builder.comment("Magic damage per second, in percent of the current health of the target, level " + (i + 1))
+                        .defineInRange("percentLevel" + (i + 1), tortureDefaults[i], 0.0D, 1000.0D);
+            }
+            tortureSeconds = builder.comment("Seconds the torture lasts (it deals damage once per second; every basic attack refreshes it)")
+                    .defineInRange("durationSeconds", 3.0D, 1.0D, 600.0D);
             builder.pop();
         }
     }
@@ -676,6 +703,32 @@ public final class ValorConfig {
 
     public static int activeHudOffsetY() {
         try { return CLIENT.activeHudOffsetY.get(); } catch (IllegalStateException e) { return 40; }
+    }
+
+    private static final double[] EXTERMINATION_DEFAULTS = {3.0D, 4.25D, 5.0D, 5.25D, 6.0D};
+
+    public static double exterminationPierce(int level) {
+        int i = Math.max(1, Math.min(5, level)) - 1;
+        try { return COMMON.exterminationPierce[i].get(); } catch (IllegalStateException e) { return EXTERMINATION_DEFAULTS[i]; }
+    }
+
+    public static int exterminationMaxStacks() {
+        try { return COMMON.exterminationMaxStacks.get(); } catch (IllegalStateException e) { return 10; }
+    }
+
+    public static double exterminationSeconds() {
+        try { return COMMON.exterminationSeconds.get(); } catch (IllegalStateException e) { return 5.0D; }
+    }
+
+    private static final double[] TORTURE_DEFAULTS = {2.0D, 2.5D, 3.0D, 3.5D, 4.0D};
+
+    public static double torturePercent(int level) {
+        int i = Math.max(1, Math.min(5, level)) - 1;
+        try { return COMMON.torturePercent[i].get(); } catch (IllegalStateException e) { return TORTURE_DEFAULTS[i]; }
+    }
+
+    public static double tortureSeconds() {
+        try { return COMMON.tortureSeconds.get(); } catch (IllegalStateException e) { return 3.0D; }
     }
 
     private ValorConfig() {}
