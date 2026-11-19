@@ -12,6 +12,7 @@ import com.valor.items.item.ArcticOrbItem;
 import com.valor.items.item.StikksStingItem;
 import com.valor.items.item.UrielsBrandItem;
 import com.valor.items.item.SoaringAuraItem;
+import com.valor.items.item.ZweihanderItem;
 import com.valor.items.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -89,6 +90,19 @@ public final class SickleHud {
         exterminationStacks = stacks;
         exterminationEnd = now + ticksLeft;
         exterminationTotal = Math.max(1, ticksTotal);
+    }
+
+    // ---- Zweihander: Rapid Blade ----
+    private static int rapidStacks;
+    private static long rapidEnd;
+    private static int rapidTotal = 1;
+
+    public static void updateRapidBlade(int stacks, int ticksLeft, int ticksTotal) {
+        Minecraft mc = Minecraft.getInstance();
+        long now = mc.level == null ? 0 : mc.level.getGameTime();
+        rapidStacks = stacks;
+        rapidEnd = now + ticksLeft;
+        rapidTotal = Math.max(1, ticksTotal);
     }
 
     // ---- Stikk's Sting: Wind's Blessing ----
@@ -189,6 +203,7 @@ public final class SickleHud {
             boolean showWind = windStrength > 0 && windEnd > now && StikksStingItem.getEquippedLevel(mc.player) > 0;
             boolean showUriel = urielCooldownEnd > now && UrielsBrandItem.getEquippedLevel(mc.player) > 0;
             boolean showExtermination = exterminationStacks > 0 && exterminationEnd > now && SoaringAuraItem.getEquippedLevel(mc.player) > 0;
+            boolean showRapid = rapidStacks > 0 && rapidEnd > now && ZweihanderItem.getEquippedLevel(mc.player) > 0;
             int count = (showSickle ? 1 : 0) + (showGaia ? 1 : 0) + (showAdr ? 1 : 0) + (showFlame ? 1 : 0)
                     + (showWind ? 1 : 0) + (showUriel ? 1 : 0);
             int step = ICON_SIZE + 4;
@@ -221,6 +236,10 @@ public final class SickleHud {
             }
             if (showExtermination) {
                 drawExtermination(graphics, mc.font, baseX + slot * step, passiveY, now, partialTick);
+                slot++;
+            }
+            if (showRapid) {
+                drawRapidBlade(graphics, mc.font, baseX + slot * step, passiveY, now, partialTick);
                 slot++;
             }
             // active: near the bottom right corner of the screen, so that it is easy to tell from the passive
@@ -552,6 +571,12 @@ public final class SickleHud {
     private static void drawExtermination(GuiGraphics g, Font font, int x, int y, long now, float partialTick) {
         drawStacks(g, font, x, y, now, partialTick, new ItemStack(ModItems.SOARING_AURA.get()), 0xFF4A3414,
                 exterminationStacks, exterminationEnd, exterminationTotal);
+    }
+
+    /** Zweihander: Rapid Blade. */
+    private static void drawRapidBlade(GuiGraphics g, Font font, int x, int y, long now, float partialTick) {
+        drawStacks(g, font, x, y, now, partialTick, new ItemStack(ModItems.ZWEIHANDER.get()), 0xFF4A3414,
+                rapidStacks, rapidEnd, rapidTotal);
     }
 
     /** Stikk's Sting: the number shows 2 while a critical hit doubles the effect. */

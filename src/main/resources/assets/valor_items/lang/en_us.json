@@ -144,5 +144,11 @@
   "item.valor_items.beriths_agony": "Berith's Agony",
   "ability.valor_items.beriths_agony.torture.name": "Unique Passive - Torture",
   "ability.valor_items.beriths_agony.torture.desc": "Basic attacks that hit make the enemy take additional magic damage equal to %1$s of its current health every second for %2$ss.",
-  "ability.valor_items.beriths_agony.torture.change": "Current health damage per second: %s → %s"
+  "ability.valor_items.beriths_agony.torture.change": "Current health damage per second: %s → %s",
+  "item.valor_items.zweihander": "Zweihander",
+  "ability.valor_items.zweihander.rapid.name": "Unique Passive - Rapid Blade",
+  "ability.valor_items.zweihander.rapid.desc": "Basic attack hits increase attack speed by %1$s, stacking up to %2$s times, lasting for %3$ss.",
+  "ability.valor_items.zweihander.twilight.name": "Unique Passive - Twilight",
+  "ability.valor_items.zweihander.twilight.desc": "Normal attacks deal additional %1$s (+%2$s Magic Power) magic damage. Cooldown: %3$ss.",
+  "ability.valor_items.zweihander.twilight.change": "Magic damage: %s → %s"
 }

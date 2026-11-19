@@ -94,6 +94,12 @@ public final class ValorConfig {
         public final ForgeConfigSpec.DoubleValue exterminationSeconds;
         public final ForgeConfigSpec.DoubleValue[] torturePercent = new ForgeConfigSpec.DoubleValue[5];
         public final ForgeConfigSpec.DoubleValue tortureSeconds;
+        public final ForgeConfigSpec.DoubleValue rapidAttackSpeed;
+        public final ForgeConfigSpec.IntValue rapidMaxStacks;
+        public final ForgeConfigSpec.DoubleValue rapidSeconds;
+        public final ForgeConfigSpec.DoubleValue[] twilightDamage = new ForgeConfigSpec.DoubleValue[5];
+        public final ForgeConfigSpec.DoubleValue twilightMagicPercent;
+        public final ForgeConfigSpec.DoubleValue twilightCooldownSeconds;
 
         private static final double[] DEFAULT_DURATIONS = {1.5D, 1.75D, 2.0D, 2.5D, 3.0D};
 
@@ -347,6 +353,24 @@ public final class ValorConfig {
             }
             tortureSeconds = builder.comment("Seconds the torture lasts (it deals damage once per second; every basic attack refreshes it)")
                     .defineInRange("durationSeconds", 3.0D, 1.0D, 600.0D);
+            builder.pop();
+
+            builder.comment("Zweihander - Unique Passives: Rapid Blade and Twilight").push("zweihander");
+            rapidAttackSpeed = builder.comment("Rapid Blade: attack speed per stack (0.15 = +0.15)")
+                    .defineInRange("rapidAttackSpeed", 0.15D, 0.0D, 100.0D);
+            rapidMaxStacks = builder.comment("Rapid Blade: maximum number of stacks")
+                    .defineInRange("rapidMaxStacks", 2, 1, 100);
+            rapidSeconds = builder.comment("Rapid Blade: seconds the stacks last (every hit restarts it)")
+                    .defineInRange("rapidSeconds", 4.0D, 0.05D, 600.0D);
+            double[] twilightDefaults = {4.0D, 4.5D, 5.0D, 5.5D, 6.0D};
+            for (int i = 0; i < 5; i++) {
+                twilightDamage[i] = builder.comment("Twilight: base magic damage, level " + (i + 1))
+                        .defineInRange("twilightDamageLevel" + (i + 1), twilightDefaults[i], 0.0D, 10000.0D);
+            }
+            twilightMagicPercent = builder.comment("Twilight: percent of the magic damage of the wearer added to the damage")
+                    .defineInRange("twilightMagicPercent", 20.0D, 0.0D, 1000.0D);
+            twilightCooldownSeconds = builder.comment("Twilight: cooldown in seconds")
+                    .defineInRange("twilightCooldownSeconds", 0.35D, 0.0D, 600.0D);
             builder.pop();
         }
     }
@@ -729,6 +753,33 @@ public final class ValorConfig {
 
     public static double tortureSeconds() {
         try { return COMMON.tortureSeconds.get(); } catch (IllegalStateException e) { return 3.0D; }
+    }
+
+    private static final double[] TWILIGHT_DEFAULTS = {4.0D, 4.5D, 5.0D, 5.5D, 6.0D};
+
+    public static double rapidAttackSpeed() {
+        try { return COMMON.rapidAttackSpeed.get(); } catch (IllegalStateException e) { return 0.15D; }
+    }
+
+    public static int rapidMaxStacks() {
+        try { return COMMON.rapidMaxStacks.get(); } catch (IllegalStateException e) { return 2; }
+    }
+
+    public static double rapidSeconds() {
+        try { return COMMON.rapidSeconds.get(); } catch (IllegalStateException e) { return 4.0D; }
+    }
+
+    public static double twilightDamage(int level) {
+        int i = Math.max(1, Math.min(5, level)) - 1;
+        try { return COMMON.twilightDamage[i].get(); } catch (IllegalStateException e) { return TWILIGHT_DEFAULTS[i]; }
+    }
+
+    public static double twilightMagicPercent() {
+        try { return COMMON.twilightMagicPercent.get(); } catch (IllegalStateException e) { return 20.0D; }
+    }
+
+    public static double twilightCooldownSeconds() {
+        try { return COMMON.twilightCooldownSeconds.get(); } catch (IllegalStateException e) { return 0.35D; }
     }
 
     private ValorConfig() {}

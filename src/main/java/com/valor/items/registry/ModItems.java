@@ -18,6 +18,7 @@ import com.valor.items.item.OdinsWillItem;
 import com.valor.items.item.RankbreakerItem;
 import com.valor.items.item.SoaringAuraItem;
 import com.valor.items.item.UrielsBrandItem;
+import com.valor.items.item.ZweihanderItem;
 import com.valor.items.item.StikksStingItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -82,6 +83,9 @@ public final class ModItems {
 
     public static final RegistryObject<Item> BERITHS_AGONY = ITEMS.register("beriths_agony",
             () -> new BerithsAgonyItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> ZWEIHANDER = ITEMS.register("zweihander",
+            () -> new ZweihanderItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
     private ModItems() {}
 }

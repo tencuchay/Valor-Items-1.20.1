@@ -35,6 +35,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ARCTIC_ORB.get());
                         output.accept(ModItems.SOARING_AURA.get());
                         output.accept(ModItems.BERITHS_AGONY.get());
+                        output.accept(ModItems.ZWEIHANDER.get());
                     })
                     .build());
 

@@ -144,5 +144,11 @@
   "item.valor_items.beriths_agony": "Mặt Nạ Berith",
   "ability.valor_items.beriths_agony.torture.name": "Nội tại duy nhất - Thống Khổ",
   "ability.valor_items.beriths_agony.torture.desc": "Đánh thường trúng đích khiến kẻ địch chịu %1$s máu hiện tại của mục tiêu thành sát thương phép mỗi giây trong %2$ss.",
-  "ability.valor_items.beriths_agony.torture.change": "Sát thương theo máu hiện tại mỗi giây: %s → %s"
+  "ability.valor_items.beriths_agony.torture.change": "Sát thương theo máu hiện tại mỗi giây: %s → %s",
+  "item.valor_items.zweihander": "Thập Tự Kiếm",
+  "ability.valor_items.zweihander.rapid.name": "Nội tại duy nhất - Cấp Nhận",
+  "ability.valor_items.zweihander.rapid.desc": "Đòn đánh thường trúng đích tăng %1$s tốc đánh, cộng dồn tối đa %2$s lần, kéo dài %3$ss.",
+  "ability.valor_items.zweihander.twilight.name": "Nội tại duy nhất - Thánh Quang",
+  "ability.valor_items.zweihander.twilight.desc": "Đòn đánh thường gây thêm %1$s (+%2$s công phép) sát thương phép. Hồi chiêu: %3$ss.",
+  "ability.valor_items.zweihander.twilight.change": "Sát thương phép: %s → %s"
 }

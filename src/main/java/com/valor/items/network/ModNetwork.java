@@ -49,6 +49,8 @@ public final class ModNetwork {
                 WindStatePacket::encode, WindStatePacket::decode, WindStatePacket::handle);
         CHANNEL.registerMessage(16, ExterminationStatePacket.class,
                 ExterminationStatePacket::encode, ExterminationStatePacket::decode, ExterminationStatePacket::handle);
+        CHANNEL.registerMessage(17, RapidBladeStatePacket.class,
+                RapidBladeStatePacket::encode, RapidBladeStatePacket::decode, RapidBladeStatePacket::handle);
     }
 
     private ModNetwork() {}
